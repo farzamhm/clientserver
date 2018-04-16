@@ -1,0 +1,68 @@
+import socket
+import time,datetime,random,math
+import msgpack
+import threading
+UDP_IP = "127.0.0.1"
+UDP_PORT = 5010
+MESSAGE = "Hello, World!"
+TCP_IP = '127.0.0.1'
+TCP_PORT = 80
+BUFFER_SIZE = 1024
+LINK_LOSS = 1
+sleep = 1
+
+def udp_connection():
+    sock = socket.socket(socket.AF_INET ,socket.SOCK_DGRAM)
+    # sock.bind(("",UDP_PORT))# UDP
+    seq=1
+    sock.sendto( str(0.4).encode(), (UDP_IP, UDP_PORT))
+    while 1:
+        # TP_MESSAGE =str(['{0:08}'.format(seq),datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f"),MESSAGE])
+        TP_MESSAGE = str(['{0:08}'.format(seq) , datetime.datetime.now().strftime("%H:%M:%S.%f"), MESSAGE])
+        B_TP_MESSAGE=msgpack.packb(TP_MESSAGE,use_bin_type=True)
+        if math.floor(random.uniform(0,1)+LINK_LOSS):
+            # sock.sendto(TP_MESSAGE.encode(), (UDP_IP, UDP_PORT))
+            sock.sendto(B_TP_MESSAGE, (UDP_IP , UDP_PORT))
+            print(TP_MESSAGE)
+            print(sock.getsockname())
+            # servercmd , add = sock.recvfrom(1024)
+            # servercmd=msgpack.unpackb(servercmd,use_list=False)
+            # print('Recieved Msg from server: ', servercmd.decode())
+            # print('client side info',add)
+        time.sleep(sleep)
+        # time.sleep(abs(random.gauss(0,0.2))) #Jitter as normal distribution
+        seq +=1
+
+def tcp_connection():
+
+    sock_tcp = socket.socket(socket.AF_INET , socket.SOCK_STREAM)
+    sock_tcp.connect((TCP_IP , TCP_PORT))
+    while True:
+        try:
+                data_tcp = sock_tcp.recv(BUFFER_SIZE)
+                data_tcp = msgpack.unpackb(data_tcp)
+                print("tcp working:",data_tcp.decode())
+                print("client tcp working")
+        except:
+            try:
+                sock_tcp = socket.socket(socket.AF_INET , socket.SOCK_STREAM)
+                sock_tcp.connect((TCP_IP , TCP_PORT))
+            except:
+                  pass
+            pass
+
+# init_thread = threading.Thread(target=init_connection)
+udp_thread = threading.Thread(target=udp_connection,name= 'udp_thread')
+tcp_thread = threading.Thread(target=tcp_connection ,name='tcp_thread', daemon=True)
+
+# init_thread.start()
+udp_thread.start()
+tcp_thread.start()
+
+# init_thread.join()
+udp_thread.join()
+tcp_thread.join()
+
+print('program finished')
+# if __name__ == "__main__":
+#     udp_connection()
