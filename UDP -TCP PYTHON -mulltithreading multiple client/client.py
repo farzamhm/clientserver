@@ -46,10 +46,27 @@ def tcp_connection():
         sys.exit()
 
     while True:
-        recv_msg = Soc_tcp.recv(1024).decode("utf8")
-        if recv_msg == "-":
-            pass  # null operation
-        print("Recieving:",recv_msg)
+        try:
+            recv_msg = Soc_tcp.recv(1024).decode("utf8")
+
+            print("Recieving:" , recv_msg)
+
+        except:
+               print('exception')
+               try:
+                   Soc_tcp = socket.socket(socket.AF_INET , socket.SOCK_STREAM)
+                   Soc_tcp.connect((TCP_IP , TCP_PORT))
+
+               except:
+                   pass
+
+               pass
+
+
+        # if recv_msg == "-":
+        #     # Soc_tcp.connect((TCP_IP , TCP_PORT))
+        #     pass  # null operation
+
 
 udp_thread = threading.Thread(target=udp_connection,name= 'udp_thread')
 tcp_thread = threading.Thread(target=tcp_connection ,name='tcp_thread', daemon=True)
