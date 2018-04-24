@@ -37,13 +37,14 @@ def udp_connection():
 
 def tcp_connection():
     Soc_tcp = socket.socket(socket.AF_INET , socket.SOCK_STREAM)
+    flag=True
+    while flag:
+        try:
+            Soc_tcp.connect((TCP_IP , TCP_PORT))
+        except:
 
-    try:
-        Soc_tcp.connect((TCP_IP , TCP_PORT))
-    except:
-
-        print("Connection error")
-        sys.exit()
+            print("Connection error")
+            flag=False
 
     while True:
         try:
