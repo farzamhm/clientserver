@@ -4,7 +4,7 @@ import time,datetime,random,math
 import msgpack
 import threading
 import sys
-# UDP_IP = "68.182.134.78"
+# UDP_IP = "68..."
 UDP_IP = "127.0.0.1"
 UDP_PORT = 5010
 MESSAGE = "Hello,client World!"
