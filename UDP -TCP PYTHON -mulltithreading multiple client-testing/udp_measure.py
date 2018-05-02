@@ -16,13 +16,14 @@ class UdpJitterStat:
         print(self.info_config , file=open(self.save_path_jitter % self.filename_jitter , 'a'))
         self.info_config = str([self.UDP_IP ,self.UDP_PORT])
         print(self.info_config , file=open(self.save_path_jitter % self.filename_jitter , 'a'))
+        #initializing phase
         self.D1 = 0
         self.D2 = 0
         self.recv_seq = 0
         self.loss=0
         self.average_jitt=0
         self.entry=0
-        self.nloss=0
+        self.nloss=0 #number of loss packets that may happen
 
 
     def run(self,data):
@@ -34,12 +35,12 @@ class UdpJitterStat:
             self.recv_seq=int(data.decode().split("'")[1])
             self.average_jitt = ((self.D2 - self.D1) + (self.average_jitt * self.entry)) / (self.entry + 1)
             print(str(self.D2-self.D1)+","+str(self.average_jitt), file=open(self.save_path_jitter % self.filename_jitter , 'a'))
+            #reinitializing for next itteration 
             self.entry += 1
             self.D1=self.D2
             self.prev_seq=self.recv_seq
-
         else:
-            self.nloss=int(data.decode().split("'")[1])-self.prev_seq-1
+            self.nloss=self.rev_seq-self.prev_seq-1
             self.prev_seq=int(data.decode().split("'")[1])
             self.D1=float(datetime.now().strftime("%H:%M:%S.%f").split(':')[2])-float(data.decode().split("',")[1].split(':')[2])
             if self.prev_seq>2:
