@@ -40,7 +40,7 @@ class UdpJitterStat:
             self.D1=self.D2
             self.prev_seq=self.recv_seq
         else:
-            self.nloss=self.rev_seq-self.prev_seq-1
+            self.nloss=self.recv_seq-self.prev_seq-1
             self.prev_seq=int(data.decode().split("'")[1])
             self.D1=float(datetime.now().strftime("%H:%M:%S.%f").split(':')[2])-float(data.decode().split("',")[1].split(':')[2])
             if self.prev_seq>2:
