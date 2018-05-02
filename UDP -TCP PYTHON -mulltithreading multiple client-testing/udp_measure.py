@@ -22,6 +22,7 @@ class UdpJitterStat:
         self.loss=0
         self.average_jitt=0
         self.entry=0
+        self.nloss=0
 
 
     def run(self,data):
@@ -38,9 +39,10 @@ class UdpJitterStat:
             self.prev_seq=self.recv_seq
 
         else:
+            self.nloss=int(data.decode().split("'")[1])-self.prev_seq-1
             self.prev_seq=int(data.decode().split("'")[1])
             self.D1=float(datetime.now().strftime("%H:%M:%S.%f").split(':')[2])-float(data.decode().split("',")[1].split(':')[2])
             if self.prev_seq>2:
-                self.loss+=1
+                self.loss+=self.nloss
                 print("packet_loss: "+str(self.loss) , file=open(self.save_path_jitter % self.filename_jitter , 'a'))
 
